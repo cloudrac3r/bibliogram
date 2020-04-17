@@ -2,6 +2,12 @@ include ./display_structured
 
 mixin post(post, headerWithNavigation)
 	.post-page-divider
+		section.images-gallery
+			for entry in post.children
+				if entry.isVideo()
+					video(src=entry.getVideoUrlP() controls preload="auto" width=entry.data.dimensions.width height=entry.data.dimensions.height).sized-video
+				else
+					img(src=entry.getDisplayUrlP() alt=entry.getAlt() width=entry.data.dimensions.width height=entry.data.dimensions.height).sized-image
 		section.description-section
 			.user-header
 				header.user-header-inner
@@ -21,9 +27,3 @@ mixin post(post, headerWithNavigation)
 					if post.getCaption()
 						p.structured-text.description
 							+display_structured(post.getStructuredCaption())
-		section.images-gallery
-			for entry in post.children
-				if entry.isVideo()
-					video(src=entry.getVideoUrlP() controls preload="auto" width=entry.data.dimensions.width height=entry.data.dimensions.height).sized-video
-				else
-					img(src=entry.getDisplayUrlP() alt=entry.getAlt() width=entry.data.dimensions.width height=entry.data.dimensions.height).sized-image
