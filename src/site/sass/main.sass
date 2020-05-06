@@ -82,6 +82,8 @@ body
 		display: flex
 
 .profile-overview
+	background-color: #252525
+	color: #ebebeb
 	text-align: center
 	position: relative
 	line-height: 1
@@ -109,10 +111,12 @@ body
 			height: unset
 
 		a, a:visited
-				color: $main-theme-link-color
+			color: #ff9d9d
 
 		.pfp
 			margin: 25px 0
+			padding: 3px
+			background-color: #ebebeb
 
 		.full-name
 			margin: 0 0 8px
@@ -153,7 +157,7 @@ body
 
 		.bibliogram-meta
 			margin: 20px 10px
-			border-top: 1px solid #333
+			border-top: 1px solid #ebebeb
 
 			@media screen and (max-width: $layout-a-max)
 				display: none
@@ -163,7 +167,7 @@ body
 .timeline
 	--image-size: 260px
 	$image-size: var(--image-size)
-	$background: $solar-background
+	$background: #606060
 
 	@media screen and (max-width: $layout-a-max)
 		--image-size: 150px
@@ -181,7 +185,7 @@ body
 		justify-content: center
 
 	.page-number
-		color: #444
+		color: #fff
 		line-height: 1
 		max-width: 600px
 		margin: 0px auto
@@ -202,7 +206,7 @@ body
 			position: relative
 			z-index: 1
 			padding: 10px
-			background-color: $background
+			background-color: #606060
 
 	.next-page-container
 		margin: 20px 0px
