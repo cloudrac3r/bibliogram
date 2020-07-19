@@ -5,7 +5,7 @@ mixin timeline_page(page, pageIndex)
 		- const pageNumber = pageIndex + 1
 		if pageNumber > 1
 			header.page-number(id=`page-${pageNumber}`)
-				span.number Page #{pageNumber}
+				span.number= ll.fn_page_divider(pageNumber)
 
 		.timeline-inner(class=`${settings.timeline_columns}-columns`)
 			- const suggestedSize = 260 //- from css :(

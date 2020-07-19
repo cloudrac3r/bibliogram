@@ -1,6 +1,7 @@
 const {Pinski} = require("pinski")
 const {subdirs} = require("node-dir")
 const constants = require("../lib/constants")
+const lang = require("../lang")
 
 const passthrough = require("./passthrough")
 
@@ -64,7 +65,7 @@ subdirs("pug", async (err, dirs) => {
 
 	const plugins = require("pinski/plugins")
 	plugins.setInstance(pinski)
-	Object.assign(pinski.pugDefaultLocals, {constants})
+	Object.assign(pinski.pugDefaultLocals, {constants, lang})
 	Object.assign(passthrough, pinski.getExports())
 
 	console.log("[.] Server started")

@@ -107,6 +107,7 @@ let constants = {
 	},
 
 	default_user_settings: {
+		language: "en",
 		rewrite_youtube: "invidio.us",
 		rewrite_twitter: "nitter.net"
 	},

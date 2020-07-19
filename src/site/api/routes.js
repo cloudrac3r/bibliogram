@@ -1,4 +1,5 @@
 const constants = require("../../lib/constants")
+const lang = require("../../lang")
 const switcher = require("../../lib/utils/torswitcher")
 const {fetchUser, getOrFetchShortcode, userRequestCache, history, assistantSwitcher} = require("../../lib/collectors")
 const {render, redirect, getStaticURL} = require("pinski/plugins")
@@ -112,7 +113,8 @@ module.exports = [
 							username,
 							expiresMinutes: userRequestCache.getTtl("user/"+username, 1000*60),
 							getStaticURL,
-							settings
+							settings,
+							lang
 						})
 					}
 				} else if (error === constants.symbols.extractor_results.AGE_RESTRICTED) {
@@ -179,7 +181,7 @@ module.exports = [
 					contentType: "application/json",
 					content: {
 						title: getPageTitle(post),
-						html: pugCache.get("pug/fragments/post.pug").web({post, settings, getStaticURL})
+						html: pugCache.get("pug/fragments/post.pug").web({lang, post, settings, getStaticURL})
 					}
 				}
 			}).catch(error => {

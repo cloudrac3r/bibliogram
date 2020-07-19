@@ -1,0 +1,51 @@
+# Front page
+
+# Top section
+go_to_profile
+go_to_post
+go_username_or_url
+go_shortcode_or_url
+go_button
+
+# Bottom section
+about_bibliogram_header
+pug_about_bibliogram_content
+about_this_instance_header
+onion_site_available
+t_settings
+t_privacy_policy
+has_not_written_privacy_policy
+instance_not_blocked
+instance_partially_blocked
+instance_blocked
+rss_enabled
+rss_disabled
+external_links_header
+source_link
+matrix_link
+instances_link
+contact_link
+t_featured_profiles
+featured_profiles_whats_this
+html_featured_profiles_disclaimer
+
+# User page
+
+verified_badge_alt
+verified_badge_title
+post_counter_label
+outgoing_follows_counter_label
+incoming_follows_counter_label
+t_home
+tab_timeline
+tab_igtv
+next_page_button
+next_page_button_loading
+profile_is_private_notice
+no_posts_notice
+no_more_posts_notice
+fn_page_divider
+
+# Post page
+
+pug_post_timestamp

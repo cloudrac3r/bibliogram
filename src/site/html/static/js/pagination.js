@@ -75,7 +75,7 @@ class NextPage extends FreezeWidth {
 	fetch() {
 		if (this.fetching) return
 		this.fetching = true
-		this.freeze("Loading...")
+		this.freeze(this.element.getAttribute("data-loading-text"))
 		const type = this.element.getAttribute("data-type")
 
 		return fetch(`/fragment/user/${this.element.getAttribute("data-username")}/${this.nextPageNumber}?type=${type}`).then(res => res.text()).then(text => {

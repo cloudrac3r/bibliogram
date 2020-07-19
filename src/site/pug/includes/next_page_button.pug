@@ -4,8 +4,14 @@ mixin next_page_button(user, selectedTimeline, url, type)
 			-
 				const nu = new URL(url)
 				nu.searchParams.set("page", selectedTimeline.pages.length+1)
-			a(href=`${nu.search}#page-${selectedTimeline.pages.length+1}` data-page=(selectedTimeline.pages.length+1) data-username=(user.data.username) data-type=type)#next-page.next-page Next page
+			a(
+				href=`${nu.search}#page-${selectedTimeline.pages.length+1}`
+				data-page=(selectedTimeline.pages.length+1)
+				data-username=(user.data.username)
+				data-type=type
+				data-loading-text=ll.next_page_button_loading
+			)#next-page.next-page= ll.next_page_button
 	else
 		div
 			div.page-number.no-more-pages
-				span.number No more posts.
+				span.number= ll.no_more_posts_notice

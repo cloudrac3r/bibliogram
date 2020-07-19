@@ -5,13 +5,14 @@ include includes/next_page_button.pug
 include includes/display_structured
 include includes/feed_link
 
+- const ll = lang.get(settings.language)
 - const numberFormat = new Intl.NumberFormat().format
 
 mixin selector-button(text, selectorType, urlSuffix)
 	a(href=(type !== selectorType && `/u/${user.data.username}${urlSuffix}`) class=(type === selectorType && "active")).selector= text
 
 mixin verified-badge(classes)
-	img.verified-badge(class=classes src=getStaticURL("html", "/static/img/verified.svg") width=19 height=19 alt="Verified." title="Verified")
+	img.verified-badge(class=classes src=getStaticURL("html", "/static/img/verified.svg") width=19 height=19 alt=ll.verified_badge_alt title=ll.verified_badge_title)
 
 doctype html
 html
@@ -42,7 +43,7 @@ html
 			a(href="/").nav-icon-link
 				img(src="/static/img/logo-circle-min.svg" alt="Bibliogram").logo
 			a(href=settingsReferrer).nav-icon-link
-				img(src="/static/img/settings.svg" alt="Settings").settings
+				img(src="/static/img/settings.svg" alt=ll.t_settings).settings
 		.main-divider
 			header.profile-overview
 				.profile-sticky
@@ -71,12 +72,18 @@ html
 							p.website
 								a(href=userURL)= userURL
 						if user.posts != undefined
-							div.profile-counter #[span(data-numberformat=user.posts).count #{numberFormat(user.posts)}] posts
+							div.profile-counter
+								| #[span(data-numberformat=user.posts).count #{numberFormat(user.posts)} ]
+								= ll.post_counter_label
 						if followerCountsAvailable
 							if user.following != undefined
-								div.profile-counter #[span(data-numberformat=user.following).count #{numberFormat(user.following)}] following
+								div.profile-counter
+									| #[span(data-numberformat=user.following).count #{numberFormat(user.following)} ]
+									= ll.outgoing_follows_counter_label
 							if user.followedBy != undefined
-								div.profile-counter #[span(data-numberformat=user.followedBy).count #{numberFormat(user.followedBy)}] followed by
+								div.profile-counter
+									| #[span(data-numberformat=user.followedBy).count #{numberFormat(user.followedBy)} ]
+									= ll.incoming_follows_counter_label
 						else
 							div.profile-counter.not-available Followers not available.
 						.links
@@ -86,15 +93,15 @@ html
 							a(rel="noreferrer noopener" href=`https://www.instagram.com/${user.data.username}` target="_blank") instagram.com
 					section.bibliogram-meta
 						.links
-							a(href="/") Home
-							a(href=settingsReferrer) Settings
+							a(href="/")= ll.t_home
+							a(href=settingsReferrer)= ll.t_settings
 
 			- const hasPosts = !user.data.is_private && selectedTimeline.pages.length && selectedTimeline.pages[0].length
 			.timeline-section
 				.selector-container
-					+selector-button("Timeline", "timeline", "")
+					+selector-button(ll.tab_timeline, "timeline", "")
 					if user.data.has_channel !== false
-						+selector-button("IGTV", "igtv", "/channel")
+						+selector-button(ll.tab_igtv, "igtv", "/channel")
 
 				main(class=hasPosts ? "" : "no-posts")#timeline.timeline
 					if hasPosts
@@ -106,6 +113,6 @@ html
 							div.page-number
 								span.number
 									if user.data.is_private
-										| Profile is private.
+										= ll.profile_is_private_notice
 									else
-										| No posts.
+										= ll.no_posts_notice

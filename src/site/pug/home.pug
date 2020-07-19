@@ -1,5 +1,7 @@
 //- Needs rssEnabled, allUnblocked, torAvailable, hasPrivacyPolicy, onionLocation
 
+- const ll = lang.get(settings.language)
+
 doctype html
 html
 	head
@@ -13,57 +15,53 @@ html
 		.go-sections-container
 			.go-sections
 				section
-					h2.title Go to profile
+					h2.title= ll.go_to_profile
 					form(method="get" action="/u").pair-entry
-						input(type="text" name="u" placeholder="Username or URL").text
-						input(type="submit" value="Go").button
+						input(type="text" name="u" placeholder=ll.go_username_or_url).text
+						input(type="submit" value=ll.go_button).button
 				section
-					h2.title Go to post
+					h2.title= ll.go_to_post
 					form(method="get" action="/p").pair-entry
-						input(type="text" name="p" placeholder="Shortcode or URL").text
-						input(type="submit" value="Go").button
+						input(type="text" name="p" placeholder=ll.go_shortcode_or_url).text
+						input(type="submit" value=ll.go_button).button
 
 		.about-container
 			section.about
-				h2 About Bibliogram
-				p.
-					Bibliogram is a website that takes data from Instagram's public profile views and puts it into
-					a friendlier page that loads faster, gives downloadable images, eliminates ads,
-					generates RSS feeds, and doesn't urge you to sign up. #[a(href=(constants.featured_profiles.length ? "#featured-profiles" : "/u/instagram")).example-link See an example.]
-				p.
-					Bibliogram does #[em not] allow you to anonymously post, like, comment, follow, or view private profiles.
-					It does not preserve deleted posts.
-
-				h2 About this instance
+				h2= ll.about_bibliogram_header
+				!= ll.pug_about_bibliogram_content(constants.featured_profiles.length)
+				h2= ll.about_this_instance_header
 				ul
 					if onionLocation
-						li: a(href=onionLocation) Onion site available
-					li: a(href=settingsReferrer) Settings
+						li: a(href=onionLocation)= ll.onion_site_available
+					li: a(href=settingsReferrer)= ll.t_settings
 					if hasPrivacyPolicy
-						li: a(href="/privacy") Privacy policy
+						li: a(href="/privacy")= ll.t_privacy_policy
 					else
-						li Owner has not written a privacy policy
+						li= ll.has_not_written_privacy_policy
 					if allUnblocked
-						li Instance is not blocked
+						li= ll.instance_not_blocked
 					else
-						li: a(href="https://git.sr.ht/~cadence/bibliogram-docs/tree/master/docs/Instagram%20rate%20limits.md#tldr-what-does-it-mean-if-an-instance-is-blocked") Instance is partially blocked
-					li RSS feeds are #{rssEnabled ? "enabled" : "disabled"}
+						li: a(href="https://git.sr.ht/~cadence/bibliogram-docs/tree/master/docs/Instagram%20rate%20limits.md#tldr-what-does-it-mean-if-an-instance-is-blocked")= ll.instance_partially_blocked
+					if rssEnabled
+						li= ll.rss_enabled
+					else
+						li= ll.rss_disabled
 
-				h2 External links
+				h2= ll.external_links_header
 				ul
 					-
 						const links = [
-							["https://sr.ht/~cadence/bibliogram/", "Code on sourcehut", "noopener noreferrer"],
-							["https://matrix.to/#/#bibliogram:matrix.org", "Discussion room on Matrix", "noopener noreferrer"],
-							["https://git.sr.ht/~cadence/bibliogram-docs/tree/master/docs/Instances.md", "Other Bibliogram instances", "noopener noreferrer"],
-							["https://cadence.moe/about/contact", "Contact the developer", "noopener noreferrer"]
+							["https://sr.ht/~cadence/bibliogram/", ll.source_link, "noopener noreferrer"],
+							["https://matrix.to/#/#bibliogram:matrix.org", ll.matrix_link, "noopener noreferrer"],
+							["https://git.sr.ht/~cadence/bibliogram-docs/tree/master/docs/Instances.md", ll.instances_link, "noopener noreferrer"],
+							["https://cadence.moe/about/contact", ll.contact_link, "noopener noreferrer"]
 						]
 					each entry in links
 						li: a(href!=entry[0] target="_blank" rel=entry[2])= entry[1]
 
 				if constants.featured_profiles.length
 					.featured-profiles#featured-profiles
-						h2.featured-profiles-header Featured profiles
+						h2.featured-profiles-header= ll.featured_profiles_header
 
 						table.featured-profile-table
 							tbody
@@ -73,7 +71,5 @@ html
 										td= profile.description
 
 						details
-							summary What's this?
-							.details-content
-								p The owner of this website personally thinks that these profiles are interesting.
-								p These are not endorsements from the Bibliogram project.
+							summary= ll.featured_profiles_whats_this
+							.details-content= ll.html_featured_profiles_disclaimer

@@ -39,7 +39,7 @@ mixin post(post, headerWithNavigation)
 								if caption
 									p.description= caption
 							p.description
-								span Posted on #[time(datetime=post.date.toISOString() data-local-date)= post.getDisplayDate()].
+								span!= ll.pug_post_timestamp({post})
 
 		section.images-gallery
 			for entry in post.children

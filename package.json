@@ -7,6 +7,7 @@
   "scripts": {
     "start": "cd src/site && node server.js",
     "assistant": "cd src/site && node assistant.js",
+    "build-lang": "cd src/lang/utils && node build_base.js",
     "test": "tap"
   },
   "keywords": [],
