@@ -20,7 +20,7 @@
     "mixin-deep": "^2.0.1",
     "node-dir": "^0.1.17",
     "node-fetch": "^2.6.0",
-    "pinski": "git+https://git.sr.ht/~cadence/nodejs-pinski#4791286f5c999dc73e17fdfa0d9a330189f4463f",
+    "pinski": "git+https://git.sr.ht/~cadence/nodejs-pinski#ce07b2e32e79def5938f6cff6ddc28e5a290a0de",
     "pug": "^3.0.0",
     "semver": "^7.3.2",
     "sharp": "^0.25.4",
