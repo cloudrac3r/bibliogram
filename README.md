@@ -20,12 +20,15 @@ reports to GitHub. Please read that link for more information about
 reporting issues.
 - The GitHub wiki has been copied to
 [bibliogram-docs on sourcehut][docs folder], which you can edit by
-submitting a patchset.
+[submitting a patchset].
+
+[submitting a patchset]: https://git.sr.ht/~cadence/bibliogram-docs/tree/master/docs/Submitting%20a%20patchset.md
 
 ## Sourcehut links
 
 - [Bibliogram project on sourcehut][project]
 - [Bibliogram issues tracker][issues]
+- [Bibliogram development mailing list][list]
 - [Updater code repository][updater repo]
 - [Full documentation][docs folder]
 - [Discussion on Matrix][matrix]
@@ -33,6 +36,7 @@ submitting a patchset.
 [project]: https://sr.ht/~cadence/bibliogram/
 [main repo]: https://git.sr.ht/~cadence/bibliogram
 [issues]: https://todo.sr.ht/~cadence/bibliogram-issues
+[list]: https://lists.sr.ht/~cadence/bibliogram-devel
 [updater repo]: https://git.sr.ht/~cadence/bibliogram-updater
 [docs folder]: https://git.sr.ht/~cadence/bibliogram-docs/tree/master/docs
 [matrix]: https://matrix.to/#/#bibliogram:matrix.org
