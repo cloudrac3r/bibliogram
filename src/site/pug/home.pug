@@ -28,7 +28,7 @@ html
 		.about-container
 			section.about
 				h2= ll.about_bibliogram_header
-				!= ll.pug_about_bibliogram_content(constants.featured_profiles.length)
+				!= ll.pug_about_bibliogram_content({link_to_featured_profiles: constants.featured_profiles.length})
 				h2= ll.about_this_instance_header
 				ul
 					if onionLocation
