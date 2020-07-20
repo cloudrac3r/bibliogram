@@ -17,6 +17,7 @@ users_export.json*
 /.nyc_output
 /test/screenshots/diff
 /test/screenshots/staging
+/test/screenshots/final
 /src/lib/utils/saved_requests/files
 
 # My stuff
