@@ -32,7 +32,7 @@ const {pug} = require("./utils/functions")
 	data.matrix_link = "Discussion room on Matrix"
 	data.instances_link = "Other Bibliogram instances"
 	data.contact_link = "Contact the developer"
-	data.t_featured_profiles = "Featured profiles"
+	data.featured_profiles_header = "Featured profiles"
 	data.featured_profiles_whats_this = "What's this?"
 	data.html_featured_profiles_disclaimer = pug(`
 		p The owner of this website personally thinks that these profiles are interesting.

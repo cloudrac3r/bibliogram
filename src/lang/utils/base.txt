@@ -25,7 +25,7 @@ source_link
 matrix_link
 instances_link
 contact_link
-t_featured_profiles
+featured_profiles_header
 featured_profiles_whats_this
 html_featured_profiles_disclaimer
 

@@ -23,7 +23,7 @@ const data = {
 	"matrix_link": "MISSING STRING: matrix_link",
 	"instances_link": "MISSING STRING: instances_link",
 	"contact_link": "MISSING STRING: contact_link",
-	"t_featured_profiles": "MISSING STRING: t_featured_profiles",
+	"featured_profiles_header": "MISSING STRING: featured_profiles_header",
 	"featured_profiles_whats_this": "MISSING STRING: featured_profiles_whats_this",
 	"html_featured_profiles_disclaimer": "MISSING STRING: html_featured_profiles_disclaimer",
 	"verified_badge_alt": "MISSING STRING: verified_badge_alt",
