@@ -112,6 +112,14 @@ let constants = {
 		rewrite_twitter: "nitter.net"
 	},
 
+	quota: {
+		enabled: false,
+		timeframe: 20*60*60*1000,
+		count: 50,
+		ip_mode: "header", // one of: "header", "address"
+		ip_header: "x-forwarded-for"
+	},
+
 	user_settings: [
 		{
 			name: "language",
@@ -255,6 +263,7 @@ let constants = {
 		RATE_LIMITED: Symbol("RATE_LIMITED"),
 		ENDPOINT_OVERRIDDEN: Symbol("ENDPOINT_OVERRIDDEN"),
 		NO_ASSISTANTS_AVAILABLE: Symbol("NO_ASSISTANTS_AVAILABLE"),
+		QUOTA_REACHED: Symbol("QUOTA_REACHED"),
 		extractor_results: {
 			SUCCESS: Symbol("SUCCESS"),
 			AGE_RESTRICTED: Symbol("AGE_RESTRICTED"),

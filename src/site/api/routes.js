@@ -6,6 +6,7 @@ const {render, redirect, getStaticURL} = require("pinski/plugins")
 const {pugCache} = require("../passthrough")
 const {getSettings} = require("./utils/getsettings")
 const {getSettingsReferrer} = require("./utils/settingsreferrer")
+const quota = require("../../lib/quota")
 
 /** @param {import("../../lib/structures/TimelineEntry")} post */
 function getPageTitle(post) {
@@ -66,21 +67,38 @@ module.exports = [
 		}
 	},
 	{
-		route: `/u/(${constants.external.username_regex})(/channel)?`, methods: ["GET"], code: ({req, url, fill}) => {
+		route: `/u/(${constants.external.username_regex})(/channel)?`, methods: ["GET"], code: async ({req, url, fill}) => {
 			const username = fill[0]
 			const type = fill[1] ? "igtv" : "timeline"
 
 			if (username !== username.toLowerCase()) { // some capital letters
-				return Promise.resolve(redirect(`/u/${username.toLowerCase()}`, 301))
+				return redirect(`/u/${username.toLowerCase()}`, 301)
 			}
 
 			const settings = getSettings(req)
 			const params = url.searchParams
-			return fetchUser(username).then(async user => {
+
+			try {
+				if (quota.remaining(req) === 0) {
+					throw constants.symbols.QUOTA_REACHED
+				}
+
+				const {user, quotaUsed} = await fetchUser(username)
+				let remaining = quota.add(req, quotaUsed)
+
 				const selectedTimeline = user[type]
 				let pageNumber = +params.get("page")
 				if (isNaN(pageNumber) || pageNumber < 1) pageNumber = 1
-				await selectedTimeline.fetchUpToPage(pageNumber - 1)
+				const pageIndex = pageNumber - 1
+
+				const pagesNeeded = pageNumber - selectedTimeline.pages.length
+				if (pagesNeeded > remaining) {
+					throw constants.symbols.QUOTA_REACHED
+				}
+
+				const quotaUsed2 = await selectedTimeline.fetchUpToPage(pageIndex)
+				remaining = quota.add(req, quotaUsed2)
+
 				const followerCountsAvailable = !(user.constructor.name === "ReelUser" && user.following === 0 && user.followedBy === 0)
 				return render(200, "pug/user.pug", {
 					url,
@@ -90,9 +108,10 @@ module.exports = [
 					followerCountsAvailable,
 					constants,
 					settings,
-					settingsReferrer: getSettingsReferrer(req.url)
+					settingsReferrer: getSettingsReferrer(req.url),
+					remaining
 				})
-			}).catch(error => {
+			} catch (error) {
 				if (error === constants.symbols.NOT_FOUND || error === constants.symbols.ENDPOINT_OVERRIDDEN) {
 					return render(404, "pug/friendlyerror.pug", {
 						statusCode: 404,
@@ -119,10 +138,21 @@ module.exports = [
 					}
 				} else if (error === constants.symbols.extractor_results.AGE_RESTRICTED) {
 					return render(403, "pug/age_gated.pug", {settings})
+				} else if (error === constants.symbols.QUOTA_REACHED) {
+					return render(429, "pug/friendlyerror.pug", {
+						title: "Quota reached",
+						statusCode: 429,
+						message: "Quota reached",
+						explanation:
+							"Each person has a limited number of requests to Bibliogram."
+							+"\nYou have reached that limit."
+							+"\nWait a while to for your counter to reset.\n",
+						withInstancesLink: true
+					})
 				} else {
 					throw error
 				}
-			})
+			}
 		}
 	},
 	{
@@ -139,11 +169,27 @@ module.exports = [
 			let type = url.searchParams.get("type")
 			if (!["timeline", "igtv"].includes(type)) type = "timeline"
 
-			const settings = getSettings(req)
-			return fetchUser(username).then(async user => {
+			try {
+				if (quota.remaining(req) === 0) {
+					throw constants.symbols.QUOTA_REACHED
+				}
+
+				const settings = getSettings(req)
+
+				const {user, quotaUsed} = await fetchUser(username)
+				const remaining = quota.add(req, quotaUsed)
+
 				const pageIndex = pageNumber - 1
 				const selectedTimeline = user[type]
-				await selectedTimeline.fetchUpToPage(pageIndex)
+
+				const pagesNeeded = pageNumber - selectedTimeline.pages.length
+				if (pagesNeeded > remaining) {
+					throw constants.symbols.QUOTA_REACHED
+				}
+
+				const quotaUsed2 = await selectedTimeline.fetchUpToPage(pageIndex)
+				quota.add(req, quotaUsed2)
+
 				if (selectedTimeline.pages[pageIndex]) {
 					return render(200, "pug/fragments/timeline_page.pug", {page: selectedTimeline.pages[pageIndex], selectedTimeline, type, pageIndex, user, url, settings})
 				} else {
@@ -153,7 +199,7 @@ module.exports = [
 						content: "That page does not exist."
 					}
 				}
-			}).catch(error => {
+			} catch (error) {
 				if (error === constants.symbols.NOT_FOUND || error === constants.symbols.ENDPOINT_OVERRIDDEN) {
 					return render(404, "pug/friendlyerror.pug", {
 						statusCode: 404,
@@ -163,10 +209,12 @@ module.exports = [
 					})
 				} else if (error === constants.symbols.INSTAGRAM_DEMANDS_LOGIN || error === constants.symbols.RATE_LIMITED) {
 					return render(503, "pug/fragments/timeline_loading_blocked.pug")
+				} else if (error === constants.symbols.QUOTA_REACHED) {
+					return render(429, "pug/fragments/timeline_quota_reached.pug")
 				} else {
 					throw error
 				}
-			})
+			}
 		}
 	},
 	{

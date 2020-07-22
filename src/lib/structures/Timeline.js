@@ -45,16 +45,22 @@ class Timeline {
 			: this.type === "igtv" ? collectors.fetchIGTVPage
 			: null
 		const after = this.page_info ? this.page_info.end_cursor : ""
-		return method(this.user.data.id, after).then(page => {
+		return method(this.user.data.id, after).then(({result: page, fromCache}) => {
+			const quotaUsed = fromCache ? 0 : 1
 			this.addPage(page)
-			return this.pages.slice(-1)[0]
+			return {page: this.pages.slice(-1)[0], quotaUsed}
 		})
 	}
 
 	async fetchUpToPage(index) {
+		let quotaUsed = 0
 		while (this.pages[index] === undefined && this.hasNextPage()) {
-			await this.fetchNextPage()
+			const result = await this.fetchNextPage()
+			if (typeof result !== "symbol") {
+				quotaUsed += result.quotaUsed
+			}
 		}
+		return quotaUsed
 	}
 
 	addPage(page) {

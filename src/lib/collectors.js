@@ -83,7 +83,7 @@ async function fetchUser(username, context) {
 
 /**
  * @param {string} username
- * @returns {Promise<import("./structures/User")>}
+ * @returns {Promise<{user: import("./structures/User"), quotaUsed: number}>}
  */
 function fetchUserFromHTML(username) {
 	if (constants.caching.self_blocked_status.enabled) {
@@ -151,7 +151,7 @@ function fetchUserFromHTML(username) {
 			}
 			throw error
 		})
-	})
+	}).then(user => ({user, quotaUsed: 0}))
 }
 
 /**
@@ -190,7 +190,7 @@ function updateProfilePictureFromReel(userID) {
 /**
  * @param {string} userID
  * @param {string} username
- * @returns {Promise<import("./structures/ReelUser")|import("./structures/User")>}
+ * @returns {Promise<{user: import("./structures/ReelUser")|import("./structures/User"), quotaUsed: number}>}
  */
 function fetchUserFromCombined(userID, username) {
 	// Fetch basic user information
@@ -220,11 +220,13 @@ function fetchUserFromCombined(userID, username) {
 		})
 	}).then(async user => {
 		// Add first timeline page
+		let quotaUsed = 0
 		if (!user.timeline.pages[0]) {
-			const page = await fetchTimelinePage(userID, "")
-			user.timeline.addPage(page)
+			const fetched = await fetchTimelinePage(userID, "")
+			if (!fetched.fromCache) quotaUsed++
+			user.timeline.addPage(fetched.result)
 		}
-		return user
+		return {user, quotaUsed}
 	}).catch(error => {
 		if (error === constants.symbols.RATE_LIMITED) {
 			history.report("reel", false)
@@ -234,6 +236,7 @@ function fetchUserFromCombined(userID, username) {
 }
 
 function fetchUserFromSaved(saved) {
+	let quotaUsed = 0
 	return userRequestCache.getOrFetch("user/"+saved.username, false, true, async () => {
 		// require down here or have to deal with require loop. require cache will take care of it anyway.
 		// ReelUser -> Timeline -> TimelineEntry -> collectors -/> ReelUser
@@ -252,17 +255,20 @@ function fetchUserFromSaved(saved) {
 		})
 		// Add first timeline page
 		if (!user.timeline.pages[0]) {
-			const page = await fetchTimelinePage(user.data.id, "")
+			const {result: page, fromCache} = await fetchTimelinePage(user.data.id, "")
+			if (!fromCache) quotaUsed++
 			user.timeline.addPage(page)
 		}
 		return user
+	}).then(user => {
+		return {user, quotaUsed}
 	})
 }
 
 /**
  * @param {string} userID
  * @param {string} after
- * @returns {Promise<import("./types").PagedEdges<import("./types").TimelineEntryN2>>}
+ * @returns {Promise<{result: import("./types").PagedEdges<import("./types").TimelineEntryN2>, fromCache: boolean}>}
  */
 function fetchTimelinePage(userID, after) {
 	const p = new URLSearchParams()
@@ -298,7 +304,7 @@ function fetchTimelinePage(userID, after) {
 /**
  * @param {string} userID
  * @param {string} after
- * @returns {Promise<import("./types").PagedEdges<import("./types").TimelineEntryN2>>}
+ * @returns {Promise<{result: import("./types").PagedEdges<import("./types").TimelineEntryN2>, fromCache: boolean}>}
  */
 function fetchIGTVPage(userID, after) {
 	const p = new URLSearchParams()
@@ -329,7 +335,7 @@ function fetchIGTVPage(userID, after) {
 /**
  * @param {string} userID
  * @param {string} username
- * @returns {Promise<boolean>}
+ * @returns {Promise<{result: boolean, fromCache: boolean}>}
  */
 function verifyUserPair(userID, username) {
 	// Fetch basic user information
@@ -378,14 +384,14 @@ async function getOrFetchShortcode(shortcode) {
 	} else {
 		const data = await fetchShortcodeData(shortcode)
 		const entry = getOrCreateShortcode(shortcode)
-		entry.applyN3(data)
+		entry.applyN3(data.result)
 		return entry
 	}
 }
 
 /**
  * @param {string} shortcode
- * @returns {Promise<import("./types").TimelineEntryN3>}
+ * @returns {Promise<{result: import("./types").TimelineEntryN3, fromCache: boolean}>}
  */
 function fetchShortcodeData(shortcode) {
 	// example actual query from web:

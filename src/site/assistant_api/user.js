@@ -65,7 +65,7 @@ module.exports = [
 				delete saved.updated_version
 				return Promise.resolve(replyWithUserData(saved))
 			} else {
-				return collectors.fetchUser(username, constants.symbols.fetch_context.ASSISTANT).then(user => {
+				return collectors.fetchUser(username, constants.symbols.fetch_context.ASSISTANT).then(({user}) => {
 					return replyWithUserData({
 						username: user.data.username,
 						user_id: user.data.id,

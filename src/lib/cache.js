@@ -106,15 +106,15 @@ class RequestCache extends TtlCache {
 	/**
 	 * @param {string} key
 	 * @param {() => Promise<T>} callback
-	 * @returns {Promise<T>}
+	 * @returns {Promise<{result: T, fromCache: boolean}>}
 	 */
 	getOrFetch(key, callback) {
 		this.cleanKey(key)
-		if (this.cache.has(key)) return Promise.resolve(this.get(key))
+		if (this.cache.has(key)) return Promise.resolve({result: this.get(key), fromCache: true})
 		else {
 			const pending = callback().then(result => {
 				this.set(key, result)
-				return result
+				return {result, fromCache: false}
 			})
 			this.set(key, pending)
 			return pending
@@ -124,7 +124,7 @@ class RequestCache extends TtlCache {
 	/**
 	 * @param {string} key
 	 * @param {() => Promise<T>} callback
-	 * @returns {Promise<T>}
+	 * @returns {Promise<{result: T, fromCache: boolean}>}
 	 */
 	getOrFetchPromise(key, callback) {
 		return this.getOrFetch(key, callback).then(result => {

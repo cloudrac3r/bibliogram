@@ -32,7 +32,7 @@ class TimelineEntry extends TimelineBaseMethods {
 
 	async update() {
 		return collectors.fetchShortcodeData(this.data.shortcode).then(data => {
-			this.applyN3(data)
+			this.applyN3(data.result)
 		}).catch(error => {
 			console.error("TimelineEntry could not self-update; trying to continue anyway...")
 			console.error("E:", error)

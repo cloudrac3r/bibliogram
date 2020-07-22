@@ -1,4 +1,5 @@
 import {ElemJS, q} from "./elemjs/elemjs.js"
+import {quota} from "./quota.js"
 
 class FreezeWidth extends ElemJS {
 	freeze(text) {
@@ -79,6 +80,7 @@ class NextPage extends FreezeWidth {
 		const type = this.element.getAttribute("data-type")
 
 		return fetch(`/fragment/user/${this.element.getAttribute("data-username")}/${this.nextPageNumber}?type=${type}`).then(res => res.text()).then(text => {
+			quota.change(-1)
 			q("#next-page-container").remove()
 			this.observer.disconnect()
 			q("#timeline").insertAdjacentHTML("beforeend", text)
