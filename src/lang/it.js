@@ -26,23 +26,23 @@ const {pug} = require("./utils/functions")
 	data.instance_not_blocked = "L'istanza non è bloccata"
 	data.instance_partially_blocked = "L'istanza è bloccata parzialmente"
 	data.instance_blocked = "L'istanza è bloccata"
-	data.rss_disabled = "Feed RSS non sono attivi"
-	data.rss_enabled = "Feed RSS sono attivi"
+	data.rss_disabled = "Feed RSS disattivati"
+	data.rss_enabled = "Feed RSS attivati"
 	data.external_links_header = "Collegamenti esterni"
 	data.source_link = "Codice su sourcehut"
 	data.matrix_link = "Stanza di discussione su Matrix"
 	data.instances_link = "Altre istanze di Bibliogram"
 	data.contact_link = "Contatta lo sviluppatore"
-	data.featured_profiles_header = "Profili in primo piano."
+	data.featured_profiles_header = "Profili in primo piano"
 	data.featured_profiles_whats_this = "Che cos'è questo?"
 	data.html_featured_profiles_disclaimer = pug(`
-		p Il proprietario di questo sito web pensa personalmente che questi profili sono interessanti.
-		p Questi non fanno parte del progetto Bibliogram.
+		p Il proprietario di questo sito web pensa personalmente che questi profili siano interessanti.
+		p Tuttavia non fanno direttamente parte del progetto Bibliogram.
 	`)()
 	data.verified_badge_title = "Verificato"
 	data.verified_badge_alt = "Verificato."
 	data.post_counter_label = "post"
-	data.outgoing_follows_counter_label = "segue"
+	data.outgoing_follows_counter_label = "seguiti"
 	data.incoming_follows_counter_label = "seguaci"
 	data.t_home = "Home"
 	data.tab_timeline = "Sequenza temporale"
