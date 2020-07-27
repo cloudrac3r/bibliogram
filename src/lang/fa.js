@@ -35,8 +35,8 @@ const {pug} = require("./utils/functions")
 	data.featured_profiles_header = "نمایه های ویژه"
 	data.featured_profiles_whats_this = "این چیست؟"
 	data.html_featured_profiles_disclaimer = pug(`
-		p The owner of this website personally thinks that these profiles are interesting.
-		p These are not endorsements from the Bibliogram project.
+		p مالک این وب سایت شخصا فکر می کند که این پروفایل ها جالب هستند.
+		p آنها تاییدیه از جانب Bibliogram ندارند.
 	`)()
 	data.verified_badge_title = "تایید شده"
 	data.verified_badge_alt = "تایید شده."
