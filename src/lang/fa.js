@@ -38,22 +38,22 @@ const {pug} = require("./utils/functions")
 		p The owner of this website personally thinks that these profiles are interesting.
 		p These are not endorsements from the Bibliogram project.
 	`)()
-	data.verified_badge_title = "Verified"
-	data.verified_badge_alt = "Verified."
-	data.post_counter_label = "posts"
-	data.outgoing_follows_counter_label = "following"
-	data.incoming_follows_counter_label = "followed by"
-	data.t_home = "Home"
-	data.tab_timeline = "Timeline"
-	data.tab_igtv = "IGTV"
-	data.next_page_button = "Next page"
-	data.next_page_button_loading = "Loading..."
-	data.profile_is_private_notice = "Profile is private."
-	data.no_posts_notice = "No posts."
-	data.no_more_posts_notice = "No more posts."
-	data.fn_page_divider = number => `Page ${number}`
+	data.verified_badge_title = "تایید شده"
+	data.verified_badge_alt = "تایید شده."
+	data.post_counter_label = "پست ها"
+	data.outgoing_follows_counter_label = "دنبال میکند"
+	data.incoming_follows_counter_label = "دنبال شده توسط"
+	data.t_home = "خانه"
+	data.tab_timeline = "خط زمانی"
+	data.tab_igtv = "آی‌جی تی‌وی"
+	data.next_page_button = "صفحه بعدی"
+	data.next_page_button_loading = "درحال‌بارگذاری..."
+	data.profile_is_private_notice = "نمایه خصوصی است."
+	data.no_posts_notice = "بدون پست."
+	data.no_more_posts_notice = "بدون پست بیشتر"
+	data.fn_page_divider = number => `صفحه ${number}`
 	data.pug_post_timestamp = pug(`
-		| Posted on #[time(datetime=post.date.toISOString() data-local-date)= post.getDisplayDate()].
+		| پست شده در #[time(datetime=post.date.toISOString() data-local-date)= post.getDisplayDate()].
 	`)
 })()
 
