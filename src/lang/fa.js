@@ -2,17 +2,17 @@ const data = {...require("./base")}
 const {pug} = require("./utils/functions")
 
 ;(() => {
-	data.go_to_profile = "Go to profile"
-	data.go_to_post = "Go to post"
-	data.go_username_or_url = "Username or URL"
-	data.go_shortcode_or_url = "Shortcode or URL"
-	data.go_button = "Go"
-	data.about_bibliogram_header = "About Bibliogram"
+	data.go_to_profile = "برو به نمایه"
+	data.go_to_post = "برو به پست"
+	data.go_username_or_url = "حساب کاربری یا لینک"
+	data.go_shortcode_or_url = "کد کوتاه یا لینک"
+	data.go_button = "برو"
+	data.about_bibliogram_header = "درباره Bibliogram"
 	data.pug_about_bibliogram_content = pug(`
 		p.
-			Bibliogram is a website that takes data from Instagram's public profile views and puts it into
-			a friendlier page that loads faster, gives downloadable images, eliminates ads,
-			generates RSS feeds, and doesn't urge you to sign up. #[a(href=(link_to_featured_profiles ? "#featured-profiles" : "/u/instagram")).example-link See an example.]
+			Bibliogram یک وبسایت است که اطلاعات نمایه های عمومی اینستاگرام را دریافت و آنرا در یک صفحه دوستانه و با بارگذاری سریع تر،
+			تصاویر بارگیری پذیر، حذف تبلیغات ، ایجاد خوراک آر‌اس‌اس، و شما را ثبت نام اصرار نمیکند.
+			#[a(href=(link_to_featured_profiles ? "#featured-profiles" : "/u/instagram")).example-link یک نمونه ببنید.]
 		p.
 			Bibliogram does #[em not] allow you to anonymously post, like, comment, follow, or view private profiles.
 			It does not preserve deleted posts.
