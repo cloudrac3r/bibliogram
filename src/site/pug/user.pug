@@ -99,7 +99,7 @@ html
 							.quota Quota left: #[span#quota= remaining]
 
 			- const hasPosts = !user.data.is_private && selectedTimeline.pages.length && selectedTimeline.pages[0].length
-			.timeline-section
+			.timeline-section(dir=ll.meta_direction)
 				.selector-container
 					+selector-button(ll.tab_timeline, "timeline", "")
 					if user.data.has_channel !== false

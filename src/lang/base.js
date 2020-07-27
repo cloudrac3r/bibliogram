@@ -1,6 +1,8 @@
 // This file was automatically generated and its contents will be overwritten later.
 
 const data = {
+	"meta_direction": "ltr",
+
 	"go_to_profile": "MISSING STRING: go_to_profile",
 	"go_to_post": "MISSING STRING: go_to_post",
 	"go_username_or_url": "MISSING STRING: go_username_or_url",

@@ -141,6 +141,7 @@ body
 
 		.profile-counter
 			line-height: 1.3
+			unicode-bidi: plaintext
 
 			&.not-available
 				font-style: italic
@@ -615,8 +616,6 @@ body
 					color: map-get($theme, "foreground-go-control")
 
 				.text
-					border-radius: 6px 0px 0px 6px
-					border-right: none
 					max-width: 230px
 					width: 30vw
 					background-color: map-get($theme, "background-go-input")
@@ -624,8 +623,15 @@ body
 					@media screen and (max-width: 520px)
 						width: 80vw
 
-				.button
+				&.dir-ltr .text
+					border-right: none
+					border-radius: 6px 0px 0px 6px
+
+				&.dir-rtl .text
+					border-left: none
 					border-radius: 0px 6px 6px 0px
+
+				.button
 					padding-left: 12px
 					padding-right: 12px
 					cursor: pointer
@@ -633,6 +639,12 @@ body
 
 					&:hover
 						background-color: map-get($theme, "background-power-pale")
+
+				&.dir-ltr .button
+					border-radius: 0px 6px 6px 0px
+
+				&.dir-rtl .button
+					border-radius: 6px 0px 0px 6px
 
 	.about-container
 		background-color: map-get($theme, "background-power-secondary")

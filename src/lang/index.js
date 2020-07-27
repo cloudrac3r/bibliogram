@@ -13,7 +13,7 @@ class Lang {
 			this.backing.set(code, data)
 			// Check properties
 			for (const key of Object.keys(base)) {
-				if (!data[key] || data[key] === base[key]) {
+				if (!key.startsWith("meta_") && (!data[key] || data[key] === base[key])) {
 					console.log(`[!] [${code}] ${key} was not replaced`)
 				}
 			}

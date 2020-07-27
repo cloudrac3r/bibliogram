@@ -2,6 +2,8 @@ const data = {...require("./base")}
 const {pug} = require("./utils/functions")
 
 ;(() => {
+	data.meta_direction = "rtl"
+
 	data.go_to_profile = "برو به نمایه"
 	data.go_to_post = "برو به پست"
 	data.go_username_or_url = "حساب کاربری یا لینک"

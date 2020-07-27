@@ -2,6 +2,8 @@ const data = {...require("./base")}
 const {pug} = require("./utils/functions")
 
 ;(() => {
+	data.meta_direction = "ltr"
+
 	data.go_to_profile = "Go to profile"
 	data.go_to_post = "Go to post"
 	data.go_username_or_url = "Username or URL"
