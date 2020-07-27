@@ -14,8 +14,8 @@ const {pug} = require("./utils/functions")
 			تصاویر بارگیری پذیر، حذف تبلیغات ، ایجاد خوراک آر‌اس‌اس، و شما را ثبت نام اصرار نمیکند.
 			#[a(href=(link_to_featured_profiles ? "#featured-profiles" : "/u/instagram")).example-link یک نمونه ببنید.]
 		p.
-			Bibliogram does #[em not] allow you to anonymously post, like, comment, follow, or view private profiles.
-			It does not preserve deleted posts.
+			Bibliogram به شما اجازه نمیدهد تا پست های تا پست های ناشناس،  لایک ها، نظرات، دنبال کننده ها، یا نمایه های خصوصی را مشاهده کنید.
+			این پست های حذف شده را نگه نمیدارد.
 	`)
 	data.about_this_instance_header = "مثال در این باره"
 	data.onion_site_available = "سایت پیازی در دسترس است"
