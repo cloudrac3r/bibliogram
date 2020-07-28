@@ -21,7 +21,11 @@ class TimelineEntry extends TimelineBaseMethods {
 		this.data = {}
 		const error = new Error("TimelineEntry data was not initalised in same event loop (missing __typename)") // initialise here for a useful stack trace
 		setImmediate(() => { // next event loop
-			if (!this.data.__typename) throw error
+			if (!this.data.__typename) {
+				console.error("Event loop passed. Current data:")
+				console.error(this.data)
+				throw error
+			}
 		})
 		/** @type {string} Not available until fetchExtendedOwnerP is called */
 		this.ownerPfpCacheP = null
