@@ -400,12 +400,19 @@ function fetchShortcodeData(shortcode) {
 	const p = new URLSearchParams()
 	p.set("query_hash", constants.external.shortcode_query_hash)
 	p.set("variables", JSON.stringify({shortcode}))
+	let status
 	return requestCache.getOrFetchPromise("shortcode/"+shortcode, () => {
 		return switcher.request("post_graphql", `https://www.instagram.com/graphql/query/?${p.toString()}`, async res => {
+			status = res.status
 			if (res.status === 429) throw constants.symbols.RATE_LIMITED
 		}).then(res => res.json()).then(root => {
 			/** @type {import("./types").TimelineEntryN3} */
 			const data = root.data.shortcode_media
+			if (data && !data.__typename) { // empty data? that's really weird.
+				console.error(`Shortcode request ${shortcode} gave empty data object. status: ${status}, root:`)
+				console.error(root)
+				console.error("will just proceed to crash as normal.")
+			}
 			if (data == null) {
 				// the thing doesn't exist
 				throw constants.symbols.NOT_FOUND
