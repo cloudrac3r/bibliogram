@@ -1,0 +1,14 @@
+include includes/error.pug
+
+doctype html
+html
+	head
+		title= `Blocked | Bibliogram`
+		include includes/head
+	body.error-page
+		+error(503, "Blocked by Instagram", true)
+			| Instagram is temporarily refusing to provide data to this server.
+			| This is a graphql block, which you cannot assist with.
+			| Try again in a few minutes to see if the block has been lifted.
+			|
+			|

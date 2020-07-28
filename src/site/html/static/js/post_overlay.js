@@ -135,6 +135,10 @@ function loadPostOverlay(shortcode, stateChangeType) {
 	return new Promise((resolve, reject) => {
 		const fetcher = fetchShortcodeFragment(shortcode)
 		fetcher.then(root => {
+			if (root.redirectTo) {
+				window.location.assign(root.redirectTo)
+				return
+			}
 			shortcodeDataMap.set(shortcode, root)
 			if (overlay.available) {
 				const {title, html} = root

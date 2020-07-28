@@ -120,7 +120,7 @@ module.exports = [
 						withInstancesLink: false,
 						settings
 					})
-				} else if (error === constants.symbols.INSTAGRAM_DEMANDS_LOGIN || error === constants.symbols.RATE_LIMITED) {
+				} else if (error === constants.symbols.INSTAGRAM_DEMANDS_LOGIN) {
 					return {
 						statusCode: 503,
 						contentType: "text/html",
@@ -136,6 +136,8 @@ module.exports = [
 							lang
 						})
 					}
+				} else if (error === constants.symbols.RATE_LIMITED) {
+					return render(503, "pug/blocked_graphql.pug")
 				} else if (error === constants.symbols.extractor_results.AGE_RESTRICTED) {
 					return render(403, "pug/age_gated.pug", {settings})
 				} else if (error === constants.symbols.QUOTA_REACHED) {
@@ -219,7 +221,8 @@ module.exports = [
 	},
 	{
 		route: `/fragment/post/(${constants.external.shortcode_regex})`, methods: ["GET"], code: ({req, fill}) => {
-			return getOrFetchShortcode(fill[0]).then(async post => {
+			const shortcode = fill[0]
+			return getOrFetchShortcode(shortcode).then(async post => {
 				await post.fetchChildren()
 				await post.fetchExtendedOwnerP() // serial await is okay since intermediate fetch result is cached
 				if (post.isVideo()) await post.fetchVideoURL()
@@ -233,23 +236,14 @@ module.exports = [
 					}
 				}
 			}).catch(error => {
-				if (error === constants.symbols.NOT_FOUND) {
-					return render(404, "pug/friendlyerror.pug", {
-						statusCode: 404,
-						title: "Not found",
-						message: "Somehow, you reached a post that doesn't exist.",
-						withInstancesLink: false
-					})
-				} else if (error === constants.symbols.RATE_LIMITED) {
-					return render(503, "pug/friendlyerror.pug", {
+				if (error === constants.symbols.NOT_FOUND || constants.symbols.RATE_LIMITED) {
+					return {
 						statusCode: 503,
-						title: "Post loading blocked",
-						message: "Post loading blocked",
-						explanation:
-								"Instagram blocked this server for requesting too much post data."
-							+"\nThis block is not permanent, and will expire soon."
-							+"\nPlease wait a few minutes before trying again."
-					})
+						contentType: "application/json",
+						content: {
+							redirectTo: `/p/${shortcode}`
+						}
+					}
 				} else {
 					throw error
 				}
@@ -295,6 +289,8 @@ module.exports = [
 						withInstancesLink: false,
 						settings
 					})
+				} else if (error === constants.symbols.RATE_LIMITED) {
+					return render(503, "pug/blocked_graphql.pug")
 				} else {
 					throw error
 				}
