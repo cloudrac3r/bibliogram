@@ -3,7 +3,7 @@ const {proxyProfilePic} = require("../utils/proxyurl")
 const {structure} = require("../utils/structuretext")
 
 const rewriters = {
-	rewrite_youtube: ["youtube.com", "www.youtube.com", "youtu.be"],
+	rewrite_youtube: ["youtube.com", "www.youtube.com", "m.youtube.com", "youtu.be"],
 	rewrite_twitter: ["twitter.com", "www.twitter.com", "twtr.cm"]
 }
 
