@@ -7,7 +7,7 @@ class Lang {
 
 		this.backing.set("base", require("./base"))
 
-		for (const code of ["en", "en-us", "fa", "it", "ru"]) {
+		for (const code of ["en", "en-us", "es", "fa", "it", "ru"]) {
 			// Assign lang
 			const data = require(`./${code}`)
 			this.backing.set(code, data)
