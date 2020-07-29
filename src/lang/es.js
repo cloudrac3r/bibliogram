@@ -35,7 +35,7 @@ const {pug} = require("./utils/functions")
 	data.instances_link = "Otros nodos de Bibliogram"
 	data.contact_link = "Contactar con el desarrollador"
 	data.featured_profiles_header = "Perfiles destacados"
-	data.featured_profiles_whats_this = "¿Qué; es esto?"
+	data.featured_profiles_whats_this = "¿Qué es esto?"
 	data.html_featured_profiles_disclaimer = pug(`
 		p El propietario de este sitio web piensa que estos perfiles son interesantes.
 		p Estos no est&an respaldados por el proyecto Bibliogram.
