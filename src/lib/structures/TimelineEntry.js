@@ -196,72 +196,88 @@ class TimelineEntry extends TimelineBaseMethods {
 	}
 
 	async fetchChildren() {
-		// Cached children?
-		if (this.children) return this.children
-		// Not a gallery? Convert self to a child and return.
-		if (this.getType() !== constants.symbols.TYPE_GALLERY) {
-			return this.children = [new TimelineChild(this.data)]
-		}
-		/** @type {import("../types").Edges<import("../types").GraphChildN1>|import("../types").Edges<import("../types").GraphChildVideoN3>} */
-		// @ts-ignore
-		const children = this.data.edge_sidecar_to_children
-		// It's a gallery, so we may need to fetch its children
-		// We need to fetch children if one of them is a video, because N1 has no video_url.
-		if (!children || !children.edges.length || children.edges.some(edge => edge.node.is_video && !edge.node.video_url)) {
-			await this.update()
-		}
-		// Create children
-		return this.children = this.data.edge_sidecar_to_children.edges.map(e => new TimelineChild(e.node))
+		let fromCache = true
+		await (async () => {
+			// Cached children?
+			if (this.children) return
+			// Not a gallery? Convert self to a child and return.
+			if (this.getType() !== constants.symbols.TYPE_GALLERY) {
+				this.children = [new TimelineChild(this.data)]
+				return
+			}
+			/** @type {import("../types").Edges<import("../types").GraphChildN1>|import("../types").Edges<import("../types").GraphChildVideoN3>} */
+			// @ts-ignore
+			const children = this.data.edge_sidecar_to_children
+			// It's a gallery, so we may need to fetch its children
+			// We need to fetch children if one of them is a video, because N1 has no video_url.
+			if (!children || !children.edges.length || children.edges.some(edge => edge.node.is_video && !edge.node.video_url)) {
+				fromCache = false
+				await this.update()
+			}
+			// Create children
+			this.children = this.data.edge_sidecar_to_children.edges.map(e => new TimelineChild(e.node))
+		})()
+		return {fromCache, children: this.children}
 	}
 
 	/**
 	 * Returns a proxied profile pic URL (P)
-	 * @returns {Promise<import("../types").ExtendedOwner>}
+	 * @returns {Promise<{owner: import("../types").ExtendedOwner, fromCache: boolean}>}
 	 */
 	async fetchExtendedOwnerP() {
-		// Do we just already have the extended owner?
-		if (this.data.owner.full_name) { // this property is on extended owner and not basic owner
-			const clone = proxyExtendedOwner(this.data.owner)
-			this.ownerPfpCacheP = clone.profile_pic_url
-			return clone
-		}
-		// The owner may be in the user cache, so copy from that.
-		// This could be implemented better.
-		else if (collectors.userRequestCache.hasNotPromise("user/"+this.data.owner.username)) {
-			/** @type {import("./User")} */
-			const user = collectors.userRequestCache.getWithoutClean("user/"+this.data.owner.username)
-			if (user.data.full_name) {
-				this.data.owner = {
-					id: user.data.id,
-					username: user.data.username,
-					is_verified: user.data.is_verified,
-					full_name: user.data.full_name,
-					profile_pic_url: user.data.profile_pic_url // _hd is also available here.
-				}
+		let fromCache = true
+		const clone = await (async () => {
+			// Do we just already have the extended owner?
+			if (this.data.owner.full_name) { // this property is on extended owner and not basic owner
 				const clone = proxyExtendedOwner(this.data.owner)
 				this.ownerPfpCacheP = clone.profile_pic_url
 				return clone
 			}
-			// That didn't work, so just fall through...
-		}
-		// We'll have to re-request ourselves.
-		await this.update()
-		const clone = proxyExtendedOwner(this.data.owner)
-		this.ownerPfpCacheP = clone.profile_pic_url
-		return clone
+			// The owner may be in the user cache, so copy from that.
+			else if (collectors.userRequestCache.getByID(this.data.owner.id)) {
+				/** @type {import("./User")} */
+				const user = collectors.userRequestCache.getByID(this.data.owner.id)
+				if (user.data.full_name !== undefined) {
+					this.data.owner = {
+						id: user.data.id,
+						username: user.data.username,
+						is_verified: user.data.is_verified,
+						full_name: user.data.full_name,
+						profile_pic_url: user.data.profile_pic_url // _hd is also available here.
+					}
+					const clone = proxyExtendedOwner(this.data.owner)
+					this.ownerPfpCacheP = clone.profile_pic_url
+					return clone
+				}
+				// That didn't work, so just fall through...
+			}
+			// We'll have to re-request ourselves.
+			fromCache = false
+			await this.update()
+			const clone = proxyExtendedOwner(this.data.owner)
+			this.ownerPfpCacheP = clone.profile_pic_url
+			return clone
+		})()
+		return {owner: clone, fromCache}
 	}
 
 	fetchVideoURL() {
-		if (!this.isVideo()) return Promise.resolve(null)
-		else if (this.data.video_url) return Promise.resolve(this.getVideoUrlP())
-		else return this.update().then(() => this.getVideoUrlP())
+		if (!this.isVideo()) {
+			return Promise.resolve({fromCache: true, videoURL: null})
+		} else if (this.data.video_url) {
+			return Promise.resolve({fromCache: true, videoURL: this.getVideoUrlP()})
+		} else {
+			return this.update().then(() => {
+				return {fromCache: false, videoURL: this.getVideoUrlP()}
+			})
+		}
 	}
 
 	/**
 	 * @returns {Promise<import("feed/src/typings/index").Item>}
 	 */
 	async fetchFeedData() {
-		const children = await this.fetchChildren()
+		const {children} = await this.fetchChildren()
 		return {
 			title: this.getCaptionIntroduction() || `New post from @${this.getBasicOwner().username}`,
 			description: rssDescriptionTemplate({

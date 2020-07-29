@@ -380,12 +380,12 @@ function getOrCreateShortcode(shortcode) {
 
 async function getOrFetchShortcode(shortcode) {
 	if (timelineEntryCache.has(shortcode)) {
-		return timelineEntryCache.get(shortcode)
+		return {post: timelineEntryCache.get(shortcode), fromCache: true}
 	} else {
-		const data = await fetchShortcodeData(shortcode)
+		const {result, fromCache} = await fetchShortcodeData(shortcode)
 		const entry = getOrCreateShortcode(shortcode)
-		entry.applyN3(data.result)
-		return entry
+		entry.applyN3(result)
+		return {post: entry, fromCache}
 	}
 }
 

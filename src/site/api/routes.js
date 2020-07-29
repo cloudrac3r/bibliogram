@@ -13,6 +13,24 @@ function getPageTitle(post) {
 	return (post.getCaptionIntroduction() || `Post from @${post.getBasicOwner().username}`) + " | Bibliogram"
 }
 
+function getPostAndQuota(req, shortcode) {
+	if (quota.remaining(req) === 0) {
+		throw constants.symbols.QUOTA_REACHED
+	}
+
+	return getOrFetchShortcode(shortcode).then(async ({post, fromCache: fromCache1}) => {
+		const {fromCache: fromCache2} = await post.fetchChildren()
+		const {fromCache: fromCache3} = await post.fetchExtendedOwnerP() // serial await is okay since intermediate fetch result is cached
+		const {fromCache: fromCache4} = await post.fetchVideoURL() // if post is not a video, function will just return, so this is fine
+
+		// I'd _love_ to be able to put these in an array, but I can't destructure directly into one, so this is easier.
+		const quotaUsed = (fromCache1 && fromCache2 && fromCache3 && fromCache4) ? 0 : 1 // if any of them is false then one request was needed to get the post.
+		const remaining = quota.add(req, quotaUsed)
+
+		return {post, remaining}
+	})
+}
+
 module.exports = [
 	{
 		route: "/", methods: ["GET"], code: async ({req}) => {
@@ -141,16 +159,7 @@ module.exports = [
 				} else if (error === constants.symbols.extractor_results.AGE_RESTRICTED) {
 					return render(403, "pug/age_gated.pug", {settings})
 				} else if (error === constants.symbols.QUOTA_REACHED) {
-					return render(429, "pug/friendlyerror.pug", {
-						title: "Quota reached",
-						statusCode: 429,
-						message: "Quota reached",
-						explanation:
-							"Each person has a limited number of requests to Bibliogram."
-							+"\nYou have reached that limit."
-							+"\nWait a while to for your counter to reset.\n",
-						withInstancesLink: true
-					})
+					return render(429, "pug/quota_reached.pug")
 				} else {
 					throw error
 				}
@@ -212,7 +221,7 @@ module.exports = [
 				} else if (error === constants.symbols.INSTAGRAM_DEMANDS_LOGIN || error === constants.symbols.RATE_LIMITED) {
 					return render(503, "pug/fragments/timeline_loading_blocked.pug")
 				} else if (error === constants.symbols.QUOTA_REACHED) {
-					return render(429, "pug/fragments/timeline_quota_reached.pug")
+					return render(429, "pug/fragments/quota_reached.pug")
 				} else {
 					throw error
 				}
@@ -220,25 +229,26 @@ module.exports = [
 		}
 	},
 	{
-		route: `/fragment/post/(${constants.external.shortcode_regex})`, methods: ["GET"], code: ({req, fill}) => {
+		route: `/fragment/post/(${constants.external.shortcode_regex})`, methods: ["GET"], code: async ({req, fill}) => {
 			const shortcode = fill[0]
-			return getOrFetchShortcode(shortcode).then(async post => {
-				await post.fetchChildren()
-				await post.fetchExtendedOwnerP() // serial await is okay since intermediate fetch result is cached
-				if (post.isVideo()) await post.fetchVideoURL()
-				const settings = getSettings(req)
+			const settings = getSettings(req)
+
+			try {
+				const {post, remaining} = await getPostAndQuota(req, shortcode)
 				return {
 					statusCode: 200,
 					contentType: "application/json",
 					content: {
 						title: getPageTitle(post),
-						html: pugCache.get("pug/fragments/post.pug").web({lang, post, settings, getStaticURL})
+						html: pugCache.get("pug/fragments/post.pug").web({lang, post, settings, getStaticURL}),
+						quota: remaining
 					}
 				}
-			}).catch(error => {
-				if (error === constants.symbols.NOT_FOUND || constants.symbols.RATE_LIMITED) {
+			} catch (error) {
+				if (error === constants.symbols.NOT_FOUND || constants.symbols.RATE_LIMITED || error === constants.symbols.QUOTA_REACHED) {
+					const statusCode = error === constants.symbols.QUOTA_REACHED ? 429 : 503
 					return {
-						statusCode: 503,
+						statusCode,
 						contentType: "application/json",
 						content: {
 							redirectTo: `/p/${shortcode}`
@@ -247,7 +257,7 @@ module.exports = [
 				} else {
 					throw error
 				}
-			})
+			}
 		}
 	},
 	{
@@ -268,19 +278,19 @@ module.exports = [
 		}
 	},
 	{
-		route: `/p/(${constants.external.shortcode_regex})`, methods: ["GET"], code: ({req, fill}) => {
+		route: `/p/(${constants.external.shortcode_regex})`, methods: ["GET"], code: async ({req, fill}) => {
+			const shortcode = fill[0]
 			const settings = getSettings(req)
-			return getOrFetchShortcode(fill[0]).then(async post => {
-				await post.fetchChildren()
-				await post.fetchExtendedOwnerP() // serial await is okay since intermediate fetch result is cached
-				if (post.isVideo()) await post.fetchVideoURL()
+
+			try {
+				const {post} = await getPostAndQuota(req, shortcode)
 				return render(200, "pug/post.pug", {
 					title: getPageTitle(post),
 					post,
 					website_origin: constants.website_origin,
 					settings
 				})
-			}).catch(error => {
+			} catch (error) {
 				if (error === constants.symbols.NOT_FOUND) {
 					return render(404, "pug/friendlyerror.pug", {
 						statusCode: 404,
@@ -291,10 +301,12 @@ module.exports = [
 					})
 				} else if (error === constants.symbols.RATE_LIMITED) {
 					return render(503, "pug/blocked_graphql.pug")
+				} else if (error === constants.symbols.QUOTA_REACHED) {
+					return render(429, "pug/quota_reached.pug")
 				} else {
 					throw error
 				}
-			})
+			}
 		}
 	}
 ]

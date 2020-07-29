@@ -6,6 +6,11 @@ class Quota extends ElemJS {
 		this.value = +this.element.textContent
 	}
 
+	set(value) {
+		this.value = value
+		this.text(this.value)
+	}
+
 	change(difference) {
 		this.value += difference
 		this.value = Math.max(0, this.value)

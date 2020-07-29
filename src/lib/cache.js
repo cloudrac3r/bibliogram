@@ -143,6 +143,8 @@ class UserRequestCache extends TtlCache {
 		super(ttl)
 		/** @type {Map<string, {data: T, isReel: boolean, isFailedPromise: boolean, htmlFailed: boolean, reelFailed: boolean, time: number}>} */
 		this.cache
+		/** @type {Map<string, string>} */
+		this.idCache = new Map()
 	}
 
 	/**
@@ -155,6 +157,7 @@ class UserRequestCache extends TtlCache {
 		// Preserve html failure status if now requesting as reel
 		const htmlFailed = isReel && existing && existing.htmlFailed
 		this.cache.set(key, {data, isReel, isFailedPromise: false, htmlFailed, reelFailed: false, time: Date.now()})
+		if (data && data.data && data.data.id) this.idCache.set(data.data.id, key) // this if statement is bad
 	}
 
 	/**
@@ -199,6 +202,14 @@ class UserRequestCache extends TtlCache {
 		})
 		this.set(key, willFetchReel, pending)
 		return pending
+	}
+
+	getByID(id) {
+		const key = this.idCache.get(id)
+		if (key == null) return null
+		const data = this.getWithoutClean(key)
+		if (data == null) return null
+		return data
 	}
 }
 

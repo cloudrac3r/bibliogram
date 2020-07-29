@@ -1,5 +1,6 @@
 import {q, ElemJS} from "./elemjs/elemjs.js"
 import {timeline} from "./post_series.js"
+import {quota} from "./quota.js"
 
 /** @type {PostOverlay[]} */
 const postOverlays = []
@@ -139,6 +140,12 @@ function loadPostOverlay(shortcode, stateChangeType) {
 				window.location.assign(root.redirectTo)
 				return
 			}
+
+			if (root.quota) {
+				quota.set(root.quota)
+				delete root.quota // don't apply the old quota next time the post is opened
+			}
+
 			shortcodeDataMap.set(shortcode, root)
 			if (overlay.available) {
 				const {title, html} = root

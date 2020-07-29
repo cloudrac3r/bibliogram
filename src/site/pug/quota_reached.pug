@@ -1,0 +1,14 @@
+include includes/error.pug
+
+doctype html
+html
+	head
+		title= `Quota reached | Bibliogram`
+		include includes/head
+	body.error-page
+		+error(429, "Quota reached", true)
+			| Each person has a limited number of requests to Bibliogram.
+			| You have reached that limit. You cannot load any more data on this instance.
+			| Your quota will reset automatically after some time has passed.
+			|
+			|
