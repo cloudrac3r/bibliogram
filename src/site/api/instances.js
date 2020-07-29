@@ -72,7 +72,7 @@ module.exports = [
 						}
 					}
 				})
-			})
+			}).then(cacheResult => cacheResult.result)
 		}
 	}
 ]
