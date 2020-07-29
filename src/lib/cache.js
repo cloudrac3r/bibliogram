@@ -92,7 +92,7 @@ class TtlCache {
 }
 
 /**
- * @extends TtlCache<T>
+ * @extends TtlCache<Promise<T>>
  * @template T
  */
 class RequestCache extends TtlCache {
@@ -110,14 +110,12 @@ class RequestCache extends TtlCache {
 	 */
 	getOrFetch(key, callback) {
 		this.cleanKey(key)
-		if (this.cache.has(key)) return Promise.resolve({result: this.get(key), fromCache: true})
-		else {
-			const pending = callback().then(result => {
-				this.set(key, result)
-				return {result, fromCache: false}
-			})
+		if (this.cache.has(key)) {
+			return this.getWithoutClean(key).then(result => ({result, fromCache: true}))
+		} else {
+			const pending = callback()
 			this.set(key, pending)
-			return pending
+			return pending.then(result => ({result, fromCache: false}))
 		}
 	}
 
