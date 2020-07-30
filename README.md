@@ -14,7 +14,7 @@ Please go there for all information about Bibliogram.
 
 - All development now takes place on sourcehut.
 - This GitHub repository will remain as a secondary copy, but will
-likely be kept up to date.
+  **not be kept up to date.**
 - [Issues are now tracked on sourcehut.][issues] Do not send issue
 reports to GitHub. Please read that link for more information about
 reporting issues.
