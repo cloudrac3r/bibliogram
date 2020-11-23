@@ -45,4 +45,5 @@ If you installed Bibliogram manually by cloning the repo, you now need to update
 To verify that it worked:
 - `git remote -v`
 - `git remote show origin`
+
 You should now see `https://git.sr.ht/~cadence/bibliogram` instead of github URLs.
