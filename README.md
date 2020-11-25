@@ -35,3 +35,15 @@ Please go there for all information about Bibliogram.
 [updater repo]: https://git.sr.ht/~cadence/bibliogram-updater
 [docs folder]: https://git.sr.ht/~cadence/bibliogram-docs/tree/master/docs
 [matrix]: https://matrix.to/#/#bibliogram:matrix.org
+
+
+## Updating Bibliogram to the new repository on Sourcehut:
+If you installed Bibliogram manually by cloning the repo, you now need to update it to point to the new one.
+- `cd path/to/bibliogram`
+- `git remote set-url origin https://git.sr.ht/~cadence/bibliogram`
+
+To verify that it worked:
+- `git remote -v`
+- `git remote show origin`
+
+You should now see `https://git.sr.ht/~cadence/bibliogram` instead of github URLs.
